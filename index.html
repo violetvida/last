@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工业汉语｜工作安全词语练习</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:"Noto Sans SC","Microsoft YaHei",Arial,sans-serif;
+  background:linear-gradient(135deg,#eef5ff,#f8fbff);
+  color:#172033;min-height:100vh;
+}
+.app{max-width:980px;margin:auto;padding:28px 18px 50px}
+header{background:#fff;border-radius:24px;padding:24px 26px;box-shadow:0 8px 30px rgba(42,76,120,.10);margin-bottom:18px}
+h1{margin:0 0 8px;font-size:30px}
+.subtitle{color:#68758a}
+.topbar{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+.badge{background:#eef4ff;color:#315ea8;padding:8px 14px;border-radius:999px;font-weight:700}
+.progress-wrap{height:10px;background:#e8edf5;border-radius:99px;overflow:hidden;margin-top:16px}
+.progress{height:100%;width:0;background:#4d78c7;transition:.25s}
+.tabs{display:flex;gap:10px;margin-bottom:18px}
+.tab{flex:1;border:0;border-radius:15px;padding:13px;background:#dfe7f4;color:#41506a;font-weight:700;cursor:pointer}
+.tab.active{background:#315ea8;color:#fff}
+.card{background:#fff;border-radius:24px;padding:28px;box-shadow:0 8px 30px rgba(42,76,120,.10)}
+.question-no{color:#6680a7;font-weight:700;margin-bottom:12px}
+.question{font-size:28px;line-height:1.55;font-weight:700;margin-bottom:25px}
+.hint{font-size:15px;color:#7a8799;margin-top:-12px;margin-bottom:18px}
+input{
+  width:100%;font-size:24px;padding:15px 16px;border:2px solid #d7dfeb;border-radius:14px;outline:none;
+}
+input:focus{border-color:#5d84c7}
+button.action{
+  border:0;border-radius:14px;background:#315ea8;color:white;padding:13px 22px;font-size:17px;font-weight:700;cursor:pointer;margin-top:14px
+}
+button.action:disabled{opacity:.5;cursor:not-allowed}
+.feedback{min-height:30px;margin-top:14px;font-weight:700}
+.correct{color:#16834a}.wrong{color:#c0392b}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.option{
+  border:2px solid #d9e1ec;background:#fff;border-radius:15px;padding:16px;font-size:21px;cursor:pointer;text-align:left;
+}
+.option:hover{border-color:#5d84c7;background:#f5f8fd}
+.option.correctOpt{border-color:#2aa56b;background:#eaf9f1;color:#126c45}
+.option.wrongOpt{border-color:#dc6256;background:#fff0ee;color:#a62e24}
+.sort-area{display:flex;flex-wrap:wrap;gap:10px;min-height:66px;padding:15px;border:2px dashed #ccd7e6;border-radius:15px;background:#f8fafc}
+.word{
+  border:0;background:#315ea8;color:white;border-radius:12px;padding:12px 16px;font-size:20px;cursor:pointer;font-weight:700
+}
+.word.selected{background:#8195b5}
+.answer-area{margin-bottom:16px}
+.answer-word{background:#e9f1ff;color:#244f91;border:2px solid #b9cbed}
+.sort-actions{display:flex;gap:10px;flex-wrap:wrap}
+.secondary{background:#e8edf5!important;color:#394b65!important}
+.result{text-align:center}
+.result h2{font-size:34px}
+.score{font-size:52px;font-weight:800;color:#315ea8}
+.hidden{display:none!important}
+.home-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+.part-card{padding:20px;border:2px solid #e1e8f2;border-radius:18px;background:#fafcff}
+.part-card h3{margin-top:0}
+@media(max-width:650px){
+ .options{grid-template-columns:1fr}.home-grid{grid-template-columns:1fr}.question{font-size:23px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <h1>工业汉语｜工作安全词语练习</h1>
+  <div class="subtitle">请选择练习部分开始</div>
+  <div class="topbar">
+    <div class="badge" id="partBadge">第一部分</div>
+    <div class="badge" id="qBadge">第 1 / 30 题</div>
+    <div class="badge" id="scoreBadge">得分：0</div>
+  </div>
+  <div class="progress-wrap"><div class="progress" id="progress"></div></div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" data-part="1">พาร์ท 1</button>
+  <button class="tab" data-part="2">พาร์ท 2</button>
+  <button class="tab" data-part="3">พาร์ท 3</button>
+</div>
+
+<div id="game" class="card"></div>
+</div>
+
+<script>
+const vocab = [
+"正常工作时间","主管批准","统一的工作服","必要的安全防护用品","与工作无关的私人手机",
+"部门主管的批准","合理工作安排","属于公司的重要财物","生产设备","规定的工作场所",
+"与公司经营有关的重要商业秘密","公司外部的无关人员","内部信息","公司规定的工作区域",
+"含有酒精的饮料","法律禁止的毒品","正在使用的机器","严重故障","负责该区域的主管",
+"公司的安全操作规定","未经批准的维修","严重的工作事故","负责安全工作的主管","公司规定的处理程序",
+"已经发生的事故","必要的医疗救治","危及员工安全的紧急情况","公司规定的安全疏散路线",
+"指定的安全集合点","用于日常通行的电梯"
+];
+
+const p1 = [
+["员工必须在____内工作。","正常工作时间"],
+["进入特殊区域前，需要得到____。","主管批准"],
+["员工上班时必须穿____。","统一的工作服"],
+["进入生产区域必须使用____。","必要的安全防护用品"],
+["工作时间不得使用____。","与工作无关的私人手机"],
+["进入该区域需要得到____。","部门主管的批准"],
+["主管应该做好____。","合理工作安排"],
+["员工不得擅自带走____。","属于公司的重要财物"],
+["员工使用____时必须遵守安全规定。","生产设备"],
+["员工必须在____内工作。","规定的工作场所"],
+["员工不得泄露____。","与公司经营有关的重要商业秘密"],
+["未经许可，____不得进入工作区域。","公司外部的无关人员"],
+["员工不得随意传播公司的____。","内部信息"],
+["员工只能在____内工作。","公司规定的工作区域"],
+["工作区域内禁止携带____。","含有酒精的饮料"],
+["公司严禁员工携带____进入工作场所。","法律禁止的毒品"],
+["操作人员不得靠近____。","正在使用的机器"],
+["发现设备出现____，应立即停止使用。","严重故障"],
+["发现问题后，应立即通知____。","负责该区域的主管"],
+["员工必须遵守____。","公司的安全操作规定"],
+["员工不得进行____。","未经批准的维修"],
+["发生____时，应立即报告。","严重的工作事故"],
+["安全问题应及时报告给____。","负责安全工作的主管"],
+["事故发生后，应按照____处理。","公司规定的处理程序"],
+["员工发现____，应立即报告主管。","已经发生的事故"],
+["受伤员工应接受____。","必要的医疗救治"],
+["发生____时，员工应保持冷静。","危及员工安全的紧急情况"],
+["紧急情况下，应按照____撤离。","公司规定的安全疏散路线"],
+["疏散后，员工应到达____。","指定的安全集合点"],
+["发生火灾时，不应乘坐____。","用于日常通行的电梯"]
+];
+
+const p2 = [
+["员工必须在（　）内工作。",["正常工作时间","规定的工作场所","合理工作安排","公司规定的工作区域"],"正常工作时间"],
+["进入特殊区域前，需要得到（　）。",["主管批准","统一的工作服","内部信息","生产设备"],"主管批准"],
+["员工上班时必须穿（　）。",["统一的工作服","含有酒精的饮料","生产设备","指定的安全集合点"],"统一的工作服"],
+["进入生产区域必须使用（　）。",["必要的安全防护用品","私人手机","商业秘密","电梯"],"必要的安全防护用品"],
+["工作时间不得使用（　）。",["与工作无关的私人手机","生产设备","安全疏散路线","医疗救治"],"与工作无关的私人手机"],
+["进入该区域需要得到（　）。",["部门主管的批准","已经发生的事故","严重故障","内部信息"],"部门主管的批准"],
+["主管应该做好（　）。",["合理工作安排","未经批准的维修","法律禁止的毒品","安全集合点"],"合理工作安排"],
+["员工不得擅自带走（　）。",["属于公司的重要财物","正常工作时间","工作区域","医疗救治"],"属于公司的重要财物"],
+["员工使用（　）时必须遵守安全规定。",["生产设备","商业秘密","私人手机","集合点"],"生产设备"],
+["员工必须在（　）内工作。",["规定的工作场所","公司外部的无关人员","严重故障","酒精饮料"],"规定的工作场所"],
+["员工不得泄露（　）。",["与公司经营有关的重要商业秘密","统一的工作服","生产设备","工作安排"],"与公司经营有关的重要商业秘密"],
+["未经许可，（　）不得进入工作区域。",["公司外部的无关人员","负责安全工作的主管","员工","部门主管"],"公司外部的无关人员"],
+["员工不得随意传播公司的（　）。",["内部信息","工作服","生产设备","电梯"],"内部信息"],
+["员工只能在（　）内工作。",["公司规定的工作区域","商业秘密","正常工作时间","严重故障"],"公司规定的工作区域"],
+["工作区域内禁止携带（　）。",["含有酒精的饮料","安全防护用品","工作安排","安全集合点"],"含有酒精的饮料"],
+["公司严禁员工携带（　）进入工作场所。",["法律禁止的毒品","生产设备","公司财物","工作服"],"法律禁止的毒品"],
+["操作人员不得靠近（　）。",["正在使用的机器","指定的安全集合点","正常工作时间","内部信息"],"正在使用的机器"],
+["发现设备出现（　），应立即停止使用。",["严重故障","合理工作安排","部门主管的批准","工作服"],"严重故障"],
+["发现问题后，应立即通知（　）。",["负责该区域的主管","公司外部的无关人员","电梯","生产设备"],"负责该区域的主管"],
+["员工必须遵守（　）。",["公司的安全操作规定","商业秘密","私人手机","酒精饮料"],"公司的安全操作规定"],
+["员工不得进行（　）。",["未经批准的维修","必要的医疗救治","合理工作安排","安全集合点"],"未经批准的维修"],
+["发生（　）时，应立即报告。",["严重的工作事故","正常工作时间","工作服","内部信息"],"严重的工作事故"],
+["安全问题应及时报告给（　）。",["负责安全工作的主管","公司外部的无关人员","生产设备","电梯"],"负责安全工作的主管"],
+["事故发生后，应按照（　）处理。",["公司规定的处理程序","统一的工作服","商业秘密","正常工作时间"],"公司规定的处理程序"],
+["员工发现（　），应立即报告主管。",["已经发生的事故","合理工作安排","工作区域","安全防护用品"],"已经发生的事故"],
+["受伤员工应接受（　）。",["必要的医疗救治","生产设备","工作服","商业秘密"],"必要的医疗救治"],
+["发生（　）时，员工应保持冷静。",["危及员工安全的紧急情况","正常工作时间","内部信息","部门主管的批准"],"危及员工安全的紧急情况"],
+["紧急情况下，应按照（　）撤离。",["公司规定的安全疏散路线","生产设备","工作服","私人手机"],"公司规定的安全疏散路线"],
+["疏散后，员工应到达（　）。",["指定的安全集合点","严重故障","商业秘密","正常工作时间"],"指定的安全集合点"],
+["发生火灾时，不应乘坐（　）。",["用于日常通行的电梯","生产设备","安全防护用品","工作服"],"用于日常通行的电梯"]
+];
+
+// Each item contains 2-3 phrase groups, not individual characters.
+const p3 = [
+[["正常", "工作时间"],"正常工作时间"],
+[["主管", "批准"],"主管批准"],
+[["统一的", "工作服"],"统一的工作服"],
+[["必要的", "安全防护用品"],"必要的安全防护用品"],
+[["与工作无关的", "私人手机"],"与工作无关的私人手机"],
+[["部门主管的", "批准"],"部门主管的批准"],
+[["合理", "工作安排"],"合理工作安排"],
+[["主管", "批准"],"主管批准"],
+[["属于公司的", "重要财物"],"属于公司的重要财物"],
+[["生产", "设备"],"生产设备"],
+[["规定的", "工作场所"],"规定的工作场所"],
+[["与公司经营有关的", "重要商业秘密"],"与公司经营有关的重要商业秘密"],
+[["公司外部的", "无关人员"],"公司外部的无关人员"],
+[["内部", "信息"],"内部信息"],
+[["公司规定的", "工作区域"],"公司规定的工作区域"],
+[["含有酒精的", "饮料"],"含有酒精的饮料"],
+[["法律禁止的", "毒品"],"法律禁止的毒品"],
+[["正在使用的", "机器"],"正在使用的机器"],
+[["生产", "设备"],"生产设备"],
+[["严重", "故障"],"严重故障"],
+[["负责该区域的", "主管"],"负责该区域的主管"],
+[["公司的安全操作", "规定"],"公司的安全操作规定"],
+[["未经批准的", "维修"],"未经批准的维修"],
+[["严重的", "工作事故"],"严重的工作事故"],
+[["负责安全工作的", "主管"],"负责安全工作的主管"],
+[["公司规定的", "处理程序"],"公司规定的处理程序"],
+[["已经发生的", "事故"],"已经发生的事故"],
+[["必要的", "医疗救治"],"必要的医疗救治"],
+[["危及员工安全的", "紧急情况"],"危及员工安全的紧急情况"],
+[["公司规定的安全疏散", "路线"],"公司规定的安全疏散路线"]
+];
+
+let part=1, q=0, score=0, answered=false, selected=[];
+const game=document.getElementById("game");
+
+function shuffle(a){return [...a].sort(()=>Math.random()-0.5)}
+function updateHeader(){
+  document.getElementById("partBadge").textContent=["","พาร์ท 1","พาร์ท 2","พาร์ท 3"][part];
+  document.getElementById("qBadge").textContent=`第 ${q+1} / 30 题`;
+  document.getElementById("scoreBadge").textContent=`得分：${score}`;
+  document.getElementById("progress").style.width=`${(q/30)*100}%`;
+}
+function setTabs(){
+ document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",+b.dataset.part===part));
+}
+function render(){
+ answered=false; selected=[]; updateHeader(); setTabs();
+ if(part===1) renderP1(); else if(part===2) renderP2(); else renderP3();
+}
+function next(){
+ q++;
+ if(q>=30){showResult();return}
+ render();
+}
+function showResult(){
+ document.getElementById("progress").style.width="100%";
+ game.innerHTML=`<div class="result">
+   <div class="question-no">${["","第一部分","第二部分","第三部分"][part]}</div>
+   <h2>练习完成！</h2>
+   <div class="score">${score} / 30</div>
+   <p>本部分已经完成。</p>
+   <button class="action" onclick="q=0;score=0;render()">เริ่มใหม่</button>
+ </div>`;
+}
+function renderP1(){
+ const [sentence,answer]=p1[q];
+ game.innerHTML=`<div class="question-no">第 ${q+1} 题</div>
+ <div class="question">${sentence.replace("____","<span style='text-decoration:underline'>______</span>")}</div>
+ <div class="hint">กรอกคำตอบภาษาจีน</div>
+ <input id="answer" autocomplete="off" placeholder="กรอกคำตอบ">
+ <button class="action" id="submit">ส่งคำตอบ</button>
+ <div class="feedback" id="feedback"></div>`;
+ const input=document.getElementById("answer");
+ document.getElementById("submit").onclick=checkP1;
+ input.addEventListener("keydown",e=>{if(e.key==="Enter")checkP1()});
+ input.focus();
+}
+function checkP1(){
+ if(answered)return;
+ const answer=p1[q][1], input=document.getElementById("answer"), val=input.value.trim();
+ const fb=document.getElementById("feedback");
+ if(val===answer){
+   score++;answered=true;fb.className="feedback correct";fb.textContent="ตอบถูกต้อง!";
+   document.getElementById("submit").disabled=true;
+   setTimeout(next,550);
+ }else{fb.className="feedback wrong";fb.textContent="答案不正确，请再试一次。"}
+ updateHeader();
+}
+function renderP2(){
+ const [sentence,opts,answer]=p2[q];
+ const shuffled=shuffle(opts);
+ game.innerHTML=`<div class="question-no">第 ${q+1} 题</div>
+ <div class="question">${sentence}</div>
+ <div class="options">${shuffled.map((x,i)=>`<button class="option" data-value="${x.replace(/"/g,'&quot;')}">${x}</button>`).join("")}</div>
+ <div class="feedback" id="feedback"></div>`;
+ document.querySelectorAll(".option").forEach(btn=>btn.onclick=()=>chooseP2(btn,answer));
+}
+function chooseP2(btn,answer){
+ if(answered)return;
+ const fb=document.getElementById("feedback");
+ if(btn.dataset.value===answer){
+   answered=true;score++;btn.classList.add("correctOpt");fb.className="feedback correct";fb.textContent="ตอบถูกต้อง!";
+   updateHeader();setTimeout(next,500);
+ }else{
+   btn.classList.add("wrongOpt");fb.className="feedback wrong";fb.textContent="คำตอบไม่ถูกต้อง กรุณาเลือกใหม่";
+ }
+}
+function renderP3(){
+ const [groups,answer]=p3[q];
+ const shuffled=shuffle(groups);
+ game.innerHTML=`<div class="question-no">第 ${q+1} 题</div>
+ <div class="question">请把词组排列成正确的句子。</div>
+ <div class="hint">กรุณาคลิกกลุ่มคำตามลำดับที่ถูกต้อง</div>
+ <div class="answer-area"><div class="sort-area" id="answerArea"></div></div>
+ <div class="sort-area" id="pool">${shuffled.map((x,i)=>`<button class="word" data-word="${x.replace(/"/g,'&quot;')}">${x}</button>`).join("")}</div>
+ <div class="sort-actions">
+   <button class="action" id="submitSort">ส่งคำตอบ</button>
+   <button class="action secondary" id="clearSort">เรียงใหม่</button>
+ </div>
+ <div class="feedback" id="feedback"></div>`;
+ document.querySelectorAll("#pool .word").forEach(btn=>btn.onclick=()=>selectWord(btn));
+ document.getElementById("submitSort").onclick=checkP3;
+ document.getElementById("clearSort").onclick=()=>{selected=[];renderP3()};
+}
+function selectWord(btn){
+ if(btn.disabled)return;
+ selected.push(btn.dataset.word);btn.disabled=true;btn.classList.add("selected");
+ const box=document.getElementById("answerArea");
+ const w=document.createElement("button");w.className="word answer-word";w.textContent=btn.dataset.word;
+ box.appendChild(w);
+}
+function checkP3(){
+ if(answered)return;
+ const correct=p3[q][0];
+ const ok=selected.length===correct.length && selected.every((x,i)=>x===correct[i]);
+ const fb=document.getElementById("feedback");
+ if(ok){
+   answered=true;score++;fb.className="feedback correct";fb.textContent="เรียงถูกต้อง!";
+   updateHeader();setTimeout(next,550);
+ }else{
+   fb.className="feedback wrong";fb.textContent="เรียงไม่ถูกต้อง กรุณาเรียงใหม่";
+ }
+}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
+ part=+b.dataset.part;q=0;score=0;render();
+});
+render();
+</script>
+</body>
+</html>
